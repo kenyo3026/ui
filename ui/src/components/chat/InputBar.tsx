@@ -28,7 +28,7 @@ export function InputBar({ onSend, onClear, disabled = false }: Props) {
 
   return (
     <div className="border-t border-border bg-background p-4">
-      <div className="flex items-end gap-2 max-w-3xl mx-auto">
+      <div className="flex items-end gap-2 chat-content-width mx-auto">
         <textarea
           ref={textareaRef}
           value={value}

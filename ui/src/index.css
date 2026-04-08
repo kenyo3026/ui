@@ -107,3 +107,29 @@
     @apply font-sans;
   }
 }
+
+/* Responsive chat content width based on aspect ratio */
+.chat-content-width {
+  width: 100%;
+}
+
+/* 4:3 and narrower — fill most of the width */
+@media (max-aspect-ratio: 4/3) {
+  .chat-content-width {
+    max-width: 95%;
+  }
+}
+
+/* between 4:3 and 16:9 */
+@media (min-aspect-ratio: 4/3) and (max-aspect-ratio: 16/9) {
+  .chat-content-width {
+    max-width: 85%;
+  }
+}
+
+/* 16:9 and wider */
+@media (min-aspect-ratio: 16/9) {
+  .chat-content-width {
+    max-width: 72%;
+  }
+}

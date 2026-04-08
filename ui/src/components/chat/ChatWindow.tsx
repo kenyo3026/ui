@@ -57,7 +57,7 @@ export function ChatWindow({ messages, onSend, onClear, isLoading = false, conne
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="chat-content-width mx-auto space-y-4">
           {messages.length === 0 && !isLoading && (
             <div className="flex items-center justify-center h-full min-h-[40vh]">
               <p className="text-muted-foreground text-sm">Send a message to start.</p>
