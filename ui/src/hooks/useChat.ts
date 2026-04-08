@@ -3,6 +3,7 @@ import type { Message } from "@/components/chat/MessageBubble"
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:7414/ws"
 const STORAGE_KEY = "drowdroid_messages"
+const LOADING_TIMEOUT_MS = Number(import.meta.env.VITE_LOADING_TIMEOUT_MS ?? 120_000)
 
 function loadMessages(): Message[] {
   try {
@@ -24,6 +25,7 @@ export function useChat() {
   const [isLoading, setIsLoading] = useState(false)
   const [connected, setConnected] = useState(false)
   const wsRef = useRef<WebSocket | null>(null)
+  const loadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const ws = new WebSocket(WS_URL)
@@ -37,6 +39,7 @@ export function useChat() {
       const role = raw.role as Message["role"]
 
       if (role === "done") {
+        if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current)
         setIsLoading(false)
         return
       }
@@ -69,6 +72,8 @@ export function useChat() {
       return next
     })
     setIsLoading(true)
+    if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current)
+    loadingTimerRef.current = setTimeout(() => setIsLoading(false), LOADING_TIMEOUT_MS)
     wsRef.current.send(JSON.stringify({ type: "user_message", content }))
   }, [])
 
