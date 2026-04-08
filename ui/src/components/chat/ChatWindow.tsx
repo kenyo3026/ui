@@ -23,7 +23,8 @@ function ThinkingBubble() {
   }, [])
 
   return (
-    <div className="flex w-full justify-start">
+    <div className="flex w-full justify-start items-start gap-2">
+      <span className="text-lg mt-1 shrink-0 invisible">🤖</span>
       <div className="bg-muted text-muted-foreground rounded-2xl rounded-bl-sm px-4 py-3 text-sm font-mono tracking-widest">
         thinking {dots}
       </div>
