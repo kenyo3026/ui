@@ -1,15 +1,26 @@
 import { useState } from "react"
+import { marked } from "marked"
 import { cn } from "@/lib/utils"
 
 export type Message = {
   role: "user" | "assistant" | "tool"
   content: string
-  name?: string       // tool name
+  name?: string
   arguments?: Record<string, unknown>
 }
 
 type Props = {
   message: Message
+}
+
+function Markdown({ content, className }: { content: string; className?: string }) {
+  const html = marked(content) as string
+  return (
+    <div
+      className={cn("markdown-content break-words", className)}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
 }
 
 export function MessageBubble({ message }: Props) {
@@ -31,7 +42,7 @@ export function MessageBubble({ message }: Props) {
             : "bg-muted text-foreground rounded-bl-sm"
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{content}</p>
+        <Markdown content={content} />
       </div>
     </div>
   )
