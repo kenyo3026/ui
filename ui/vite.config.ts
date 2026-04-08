@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       react(),
     ],
+    define: {
+      __APP_TITLE__: JSON.stringify(env["APP_TITLE"] ?? "Agentic AI"),
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

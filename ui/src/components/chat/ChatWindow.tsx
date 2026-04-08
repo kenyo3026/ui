@@ -61,7 +61,7 @@ export function ChatWindow({ messages, onSend, onClear, isLoading = false, conne
       {/* Header */}
       <div className="border-b border-border px-6 py-4 flex items-center gap-3">
         <div className={`w-2 h-2 rounded-full ${connected ? "bg-green-500" : "bg-red-400"}`} />
-        <span className="font-semibold text-sm">Drowdroid</span>
+        <span className="font-semibold text-sm">{__APP_TITLE__}</span>
       </div>
 
       {/* Body */}
