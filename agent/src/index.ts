@@ -36,18 +36,27 @@ async function main() {
   });
 
   wss.on("connection", (ws) => {
+    console.log("Client connected");
     const history: ModelMessage[] = [];
 
+    ws.on("close", () => console.log("Client disconnected"));
+
     ws.on("message", async (raw) => {
+      console.log("Received message:", raw.toString().slice(0, 100));
       let incoming: IncomingMessage;
 
       try {
         incoming = JSON.parse(raw.toString()) as IncomingMessage;
       } catch {
+        console.error("Failed to parse message");
         return;
       }
 
-      if (incoming.type !== "user_message" || !incoming.content) return;
+      if (incoming.type !== "user_message" || !incoming.content) {
+        console.log("Ignored message type:", incoming.type);
+        return;
+      }
+      console.log("Running agent...");
 
       history.push({ role: "user", content: incoming.content });
 

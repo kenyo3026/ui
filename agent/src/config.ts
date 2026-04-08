@@ -20,6 +20,7 @@ export const config = {
     apiKey: process.env["API_KEY"],
     baseUrl: process.env["BASE_URL"],
   },
-  workspace: optional("WORKSPACE", process.cwd()),
+  workspace: optional("AGENT_WORKSPACE", process.cwd()),
   mcpConfigPath: optional("MCP_CONFIG_PATH", "./mcps.json"),
+  rulesPath: process.env["RULES_PATH"],
 } as const;
