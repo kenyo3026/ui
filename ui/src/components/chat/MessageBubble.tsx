@@ -83,7 +83,8 @@ function ToolMessage({ message }: Props) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="flex w-full justify-start">
+    <div className="flex w-full justify-start items-start gap-2">
+      <span className="text-lg mt-1 shrink-0 invisible">🤖</span>
       <div className="max-w-[75%] rounded-xl border border-border bg-card text-sm overflow-hidden">
         <button
           onClick={() => setOpen((v) => !v)}
@@ -115,3 +116,4 @@ function ToolMessage({ message }: Props) {
     </div>
   )
 }
+
