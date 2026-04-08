@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { MessageBubble, type Message } from "./MessageBubble"
 import { InputBar } from "./InputBar"
+import { QuickQuestions } from "./QuickQuestions"
+import suggestedQuestionsConfig from "@suggested-questions"
 
 type Props = {
   messages: Message[]
@@ -31,6 +33,7 @@ function ThinkingBubble() {
 
 export function ChatWindow({ messages, onSend, onClear, isLoading = false, connected = false }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [inputValue, setInputValue] = useState("")
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -47,6 +50,12 @@ export function ChatWindow({ messages, onSend, onClear, isLoading = false, conne
     return () => window.removeEventListener("keydown", handler)
   }, [onClear])
 
+  const handleQuickSelect = (question: string) => {
+    setInputValue(question)
+  }
+
+  const suggestedQuestions: string[] = suggestedQuestionsConfig.questions
+
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
@@ -55,25 +64,40 @@ export function ChatWindow({ messages, onSend, onClear, isLoading = false, conne
         <span className="font-semibold text-sm">Drowdroid</span>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="chat-content-width mx-auto space-y-4">
-          {messages.length === 0 && !isLoading && (
-            <div className="flex items-center justify-center h-full min-h-[40vh]">
-              <p className="text-muted-foreground text-sm">Send a message to start.</p>
+      {/* Body */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Quick Questions sidebar */}
+        <QuickQuestions questions={suggestedQuestions} onSelect={handleQuickSelect} />
+
+        {/* Chat area */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto px-4 py-6">
+            <div className="chat-content-width mx-auto space-y-4">
+              {messages.length === 0 && !isLoading && (
+                <div className="flex items-center justify-center h-full min-h-[40vh]">
+                  <p className="text-muted-foreground text-sm">Send a message to start.</p>
+                </div>
+              )}
+              {messages.map((msg, i) => {
+                const lastIndexOfRole = messages.findLastIndex((m) => m.role === msg.role)
+                return <MessageBubble key={i} message={msg} showAvatar={i === lastIndexOfRole} />
+              })}
+              {isLoading && <ThinkingBubble />}
+              <div ref={bottomRef} />
             </div>
-          )}
-          {messages.map((msg, i) => {
-            const lastIndexOfRole = messages.findLastIndex((m) => m.role === msg.role)
-            return <MessageBubble key={i} message={msg} showAvatar={i === lastIndexOfRole} />
-          })}
-          {isLoading && <ThinkingBubble />}
-          <div ref={bottomRef} />
+          </div>
+
+          {/* Input */}
+          <InputBar
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={onSend}
+            onClear={onClear}
+            disabled={isLoading}
+          />
         </div>
       </div>
-
-      {/* Input */}
-      <InputBar onSend={onSend} onClear={onClear} disabled={isLoading} />
     </div>
   )
 }

@@ -1,21 +1,22 @@
-import { useState, useRef, KeyboardEvent } from "react"
+import { useRef, KeyboardEvent } from "react"
 import { Button } from "@/components/ui/button"
 
 type Props = {
+  value: string
+  onChange: (value: string) => void
   onSend: (content: string) => void
   onClear: () => void
   disabled?: boolean
 }
 
-export function InputBar({ onSend, onClear, disabled = false }: Props) {
-  const [value, setValue] = useState("")
+export function InputBar({ value, onChange, onSend, onClear, disabled = false }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleSend = () => {
     const trimmed = value.trim()
     if (!trimmed || disabled) return
     onSend(trimmed)
-    setValue("")
+    onChange("")
     textareaRef.current?.focus()
   }
 
@@ -32,7 +33,7 @@ export function InputBar({ onSend, onClear, disabled = false }: Props) {
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder="Send a message... (Enter to send, Shift+Enter for new line)"
