@@ -43,9 +43,10 @@ export function InputBar({ onSend, onClear, disabled = false }: Props) {
         <Button
           onClick={handleSend}
           disabled={disabled || !value.trim()}
-          className="rounded-xl px-5 py-3 h-auto"
+          className="rounded-xl px-5 py-3 h-auto flex items-center gap-1.5"
         >
-          Send
+          Enter
+          <kbd className="rounded border border-primary-foreground/30 bg-primary-foreground/10 px-1 py-0.5 font-mono text-[10px]">↵</kbd>
         </Button>
         <Button
           onClick={onClear}
