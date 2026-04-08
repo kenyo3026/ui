@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { MessageBubble, type Message } from "./MessageBubble"
 import { InputBar } from "./InputBar"
 
@@ -9,12 +9,31 @@ type Props = {
   connected?: boolean
 }
 
+function ThinkingBubble() {
+  const [dots, setDots] = useState(".")
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setDots((d) => (d.length >= 3 ? "." : d + "."))
+    }, 400)
+    return () => clearInterval(id)
+  }, [])
+
+  return (
+    <div className="flex w-full justify-start">
+      <div className="bg-muted text-muted-foreground rounded-2xl rounded-bl-sm px-4 py-3 text-sm font-mono tracking-widest">
+        thinking {dots}
+      </div>
+    </div>
+  )
+}
+
 export function ChatWindow({ messages, onSend, isLoading = false, connected = false }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  }, [messages, isLoading])
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -22,26 +41,20 @@ export function ChatWindow({ messages, onSend, isLoading = false, connected = fa
       <div className="border-b border-border px-6 py-4 flex items-center gap-3">
         <div className={`w-2 h-2 rounded-full ${connected ? "bg-green-500" : "bg-red-400"}`} />
         <span className="font-semibold text-sm">Drowdroid</span>
-        {isLoading && (
-          <span className="text-xs text-muted-foreground animate-pulse">
-            thinking...
-          </span>
-        )}
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-4">
-          {messages.length === 0 && (
+          {messages.length === 0 && !isLoading && (
             <div className="flex items-center justify-center h-full min-h-[40vh]">
-              <p className="text-muted-foreground text-sm">
-                輸入訊息開始對話
-              </p>
+              <p className="text-muted-foreground text-sm">Send a message to start.</p>
             </div>
           )}
           {messages.map((msg, i) => (
             <MessageBubble key={i} message={msg} />
           ))}
+          {isLoading && <ThinkingBubble />}
           <div ref={bottomRef} />
         </div>
       </div>
