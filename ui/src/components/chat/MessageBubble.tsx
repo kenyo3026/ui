@@ -2,6 +2,31 @@ import { useState } from "react"
 import { marked } from "marked"
 import { cn } from "@/lib/utils"
 
+function CopyButton({ text, isUser }: { text: string; isUser: boolean }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={cn(
+        "opacity-0 group-hover:opacity-100 transition-opacity text-[10px] px-1.5 py-0.5 rounded border",
+        isUser
+          ? "border-primary-foreground/30 text-primary-foreground/60 hover:text-primary-foreground hover:border-primary-foreground/60"
+          : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+      )}
+    >
+      {copied ? "copied" : "copy"}
+    </button>
+  )
+}
+
 export type Message = {
   role: "user" | "assistant" | "tool"
   content: string
@@ -33,7 +58,7 @@ export function MessageBubble({ message }: Props) {
   const isUser = role === "user"
 
   return (
-    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex w-full group", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
           "max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
@@ -43,6 +68,9 @@ export function MessageBubble({ message }: Props) {
         )}
       >
         <Markdown content={content} />
+        <div className={cn("flex mt-2", isUser ? "justify-end" : "justify-start")}>
+          <CopyButton text={content} isUser={isUser} />
+        </div>
       </div>
     </div>
   )
