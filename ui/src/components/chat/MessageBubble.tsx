@@ -36,6 +36,7 @@ export type Message = {
 
 type Props = {
   message: Message
+  showAvatar?: boolean
 }
 
 function Markdown({ content, className }: { content: string; className?: string }) {
@@ -48,7 +49,7 @@ function Markdown({ content, className }: { content: string; className?: string 
   )
 }
 
-export function MessageBubble({ message }: Props) {
+export function MessageBubble({ message, showAvatar = false }: Props) {
   const { role, content } = message
 
   if (role === "tool") {
@@ -58,7 +59,8 @@ export function MessageBubble({ message }: Props) {
   const isUser = role === "user"
 
   return (
-    <div className={cn("flex w-full group", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex w-full group items-start gap-2", isUser ? "justify-end" : "justify-start")}>
+      {!isUser && <span className={cn("text-lg mt-1 shrink-0", !showAvatar && "invisible")}>🤖</span>}
       <div
         className={cn(
           "max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
@@ -72,6 +74,7 @@ export function MessageBubble({ message }: Props) {
           <CopyButton text={content} isUser={isUser} />
         </div>
       </div>
+      {isUser && <span className={cn("text-lg mt-1 shrink-0", !showAvatar && "invisible")}>👤</span>}
     </div>
   )
 }

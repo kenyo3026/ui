@@ -63,9 +63,10 @@ export function ChatWindow({ messages, onSend, onClear, isLoading = false, conne
               <p className="text-muted-foreground text-sm">Send a message to start.</p>
             </div>
           )}
-          {messages.map((msg, i) => (
-            <MessageBubble key={i} message={msg} />
-          ))}
+          {messages.map((msg, i) => {
+            const lastIndexOfRole = messages.findLastIndex((m) => m.role === msg.role)
+            return <MessageBubble key={i} message={msg} showAvatar={i === lastIndexOfRole} />
+          })}
           {isLoading && <ThinkingBubble />}
           <div ref={bottomRef} />
         </div>
