@@ -1,0 +1,40 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.egg-info/
+build/
+dist/
+*.egg
+.python-version
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Logs & checkpoints
+logs/
+checkpoints/
+checkpoint_*/
+
+# Node
+node_modules/
+*.local
+
+# Vite build output
+ui/dist/
+ui/.vite/
+
+# Editor
+.cursor/
+.vscode/
+
+# Assets (generated/binary)
+ui/src/assets/
