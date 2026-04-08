@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button"
 
 type Props = {
   onSend: (content: string) => void
+  onClear: () => void
   disabled?: boolean
 }
 
-export function InputBar({ onSend, disabled = false }: Props) {
+export function InputBar({ onSend, onClear, disabled = false }: Props) {
   const [value, setValue] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -34,7 +35,7 @@ export function InputBar({ onSend, disabled = false }: Props) {
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder="輸入訊息… (Enter 送出，Shift+Enter 換行)"
+          placeholder="Send a message... (Enter to send, Shift+Enter for new line)"
           rows={1}
           className="flex-1 resize-none rounded-xl border border-input bg-muted px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 max-h-40 overflow-y-auto"
           style={{ lineHeight: "1.5" }}
@@ -44,7 +45,16 @@ export function InputBar({ onSend, disabled = false }: Props) {
           disabled={disabled || !value.trim()}
           className="rounded-xl px-5 py-3 h-auto"
         >
-          送出
+          Send
+        </Button>
+        <Button
+          onClick={onClear}
+          variant="outline"
+          className="rounded-xl px-3 py-3 h-auto flex items-center gap-1.5 text-muted-foreground"
+        >
+          Clear
+          <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">Ctrl</kbd>
+          <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">K</kbd>
         </Button>
       </div>
     </div>

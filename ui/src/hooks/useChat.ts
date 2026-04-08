@@ -72,5 +72,10 @@ export function useChat() {
     wsRef.current.send(JSON.stringify({ type: "user_message", content }))
   }, [])
 
-  return { messages, isLoading, connected, sendMessage }
+  const clearMessages = useCallback(() => {
+    setMessages([])
+    localStorage.removeItem(STORAGE_KEY)
+  }, [])
+
+  return { messages, isLoading, connected, sendMessage, clearMessages }
 }

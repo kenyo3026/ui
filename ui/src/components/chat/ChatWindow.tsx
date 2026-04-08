@@ -5,6 +5,7 @@ import { InputBar } from "./InputBar"
 type Props = {
   messages: Message[]
   onSend: (content: string) => void
+  onClear: () => void
   isLoading?: boolean
   connected?: boolean
 }
@@ -28,12 +29,23 @@ function ThinkingBubble() {
   )
 }
 
-export function ChatWindow({ messages, onSend, isLoading = false, connected = false }: Props) {
+export function ChatWindow({ messages, onSend, onClear, isLoading = false, connected = false }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isLoading])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "k") {
+        e.preventDefault()
+        onClear()
+      }
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [onClear])
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -60,7 +72,7 @@ export function ChatWindow({ messages, onSend, isLoading = false, connected = fa
       </div>
 
       {/* Input */}
-      <InputBar onSend={onSend} disabled={isLoading} />
+      <InputBar onSend={onSend} onClear={onClear} disabled={isLoading} />
     </div>
   )
 }
