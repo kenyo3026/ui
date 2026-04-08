@@ -24,6 +24,9 @@ logs/
 checkpoints/
 checkpoint_*/
 
+# configs
+configs/
+
 # Node
 node_modules/
 *.local

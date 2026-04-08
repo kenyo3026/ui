@@ -3,6 +3,7 @@ import { type ModelMessage } from "ai";
 import { config } from "./config.js";
 import { runAgent } from "./agent.js";
 import { loadMcpTools, type ToolSet } from "./mcp.js";
+import { loadRules, formatRulesPrompt } from "./rules.js";
 
 type IncomingMessage = {
   type: "user_message";
@@ -23,10 +24,42 @@ function send(ws: WebSocket, msg: OutgoingMessage): void {
 }
 
 async function main() {
+  console.log("Config:", {
+    mcpConfigPath: config.mcpConfigPath,
+    rulesPath: config.rulesPath,
+    workspace: config.workspace,
+  });
+
+  console.log("Loading MCP tools...");
   const { tools: mcpTools, cleanup } = await loadMcpTools();
 
   if (Object.keys(mcpTools).length > 0) {
     console.log(`Loaded MCP tools: ${Object.keys(mcpTools).join(", ")}`);
+  } else {
+    console.log("No MCP tools loaded.");
+  }
+
+  let rulesSection = "";
+  if (config.rulesPath) {
+    try {
+      const rules = loadRules(config.rulesPath);
+      const alwaysNames = rules.alwaysApply.map((r) => r.filePath);
+      const requestableNames = rules.requestable.map((r) => r.filePath);
+
+      if (alwaysNames.length > 0) {
+        console.log(`Loaded always-apply rules:\n  ${alwaysNames.join("\n  ")}`);
+      }
+      if (requestableNames.length > 0) {
+        console.log(`Loaded requestable rules:\n  ${requestableNames.join("\n  ")}`);
+      }
+      if (alwaysNames.length === 0 && requestableNames.length === 0) {
+        console.log("No rule files found in rules path.");
+      }
+
+      rulesSection = formatRulesPrompt(rules);
+    } catch (err) {
+      console.warn("Failed to load rules:", err);
+    }
   }
 
   const wss = new WebSocketServer({ port: config.ws.port });
@@ -64,6 +97,7 @@ async function main() {
         await runAgent({
           history,
           mcpTools,
+          rulesSection,
           onAssistant: (content) => {
             history.push({ role: "assistant", content });
             send(ws, { role: "assistant", content });

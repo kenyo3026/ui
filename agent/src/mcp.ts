@@ -87,11 +87,16 @@ export async function loadMcpTools(): Promise<{
 
   try {
     mcpConfig = JSON.parse(readFileSync(config.mcpConfigPath, "utf-8")) as McpConfig;
-  } catch {
+  } catch (err) {
+    console.warn("Failed to read mcps.json:", err);
     return { tools: {}, cleanup: async () => {} };
   }
 
+  console.log("MCP raw config keys:", Object.keys(mcpConfig));
+
   const servers = parseServers(mcpConfig);
+
+  console.log("MCP servers to connect:", servers.map((s) => s.name));
 
   if (!servers.length) {
     return { tools: {}, cleanup: async () => {} };

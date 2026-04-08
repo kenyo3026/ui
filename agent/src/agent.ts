@@ -5,29 +5,16 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { bashTool } from "./bash.js";
 import { config } from "./config.js";
 import type { ToolSet } from "./mcp.js";
-import { loadRules, formatRulesPrompt } from "./rules.js";
 
 type AgentOptions = {
   history: ModelMessage[];
   mcpTools?: ToolSet;
+  rulesSection?: string;
   onAssistant: (content: string) => void;
   onTool: (name: string, args: Record<string, unknown>, result: string) => void;
 };
 
-function buildRulesSection(): string {
-  if (!config.rulesPath) return "";
-
-  try {
-    const rules = loadRules(config.rulesPath);
-    return formatRulesPrompt(rules);
-  } catch (err) {
-    console.warn("Failed to load rules:", err);
-    return "";
-  }
-}
-
-function buildSystemPrompt(): string {
-  const rulesSection = buildRulesSection();
+function buildSystemPrompt(rulesSection: string): string {
 
   return `
 You are a powerful agentic AI coding assistant.
@@ -107,6 +94,7 @@ function resolveModel() {
 export async function runAgent({
   history,
   mcpTools = {},
+  rulesSection = "",
   onAssistant,
   onTool,
 }: AgentOptions): Promise<void> {
@@ -114,7 +102,7 @@ export async function runAgent({
 
   await generateText({
     model: llmModel,
-    system: buildSystemPrompt(),
+    system: buildSystemPrompt(rulesSection),
     messages: history,
     tools: { bash: bashTool, ...mcpTools },
     stopWhen: stepCountIs(50),
