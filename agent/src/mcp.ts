@@ -11,9 +11,22 @@ type McpServerConfig = {
   env?: Record<string, string>;
 };
 
-type McpConfig = {
-  servers: McpServerConfig[];
+type McpConfigEntry = {
+  command: string;
+  args?: string[];
+  env?: Record<string, string>;
 };
+
+type McpConfig = {
+  mcps: Record<string, McpConfigEntry>;
+};
+
+function parseServers(mcpConfig: McpConfig): McpServerConfig[] {
+  return Object.entries(mcpConfig.mcps).map(([name, entry]) => ({
+    name,
+    ...entry,
+  }));
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ToolSet = Record<string, Tool<any, any>>;
@@ -78,12 +91,14 @@ export async function loadMcpTools(): Promise<{
     return { tools: {}, cleanup: async () => {} };
   }
 
-  if (!mcpConfig.servers?.length) {
+  const servers = parseServers(mcpConfig);
+
+  if (!servers.length) {
     return { tools: {}, cleanup: async () => {} };
   }
 
   const results = await Promise.allSettled(
-    mcpConfig.servers.map((s) => connectServer(s))
+    servers.map((s) => connectServer(s))
   );
 
   const allTools: ToolSet = {};
@@ -95,7 +110,7 @@ export async function loadMcpTools(): Promise<{
       cleanups.push(result.value.cleanup);
     } else {
       console.warn(
-        `MCP server "${mcpConfig.servers[i]!.name}" failed to connect:`,
+        `MCP server "${servers[i]!.name}" failed to connect:`,
         result.reason
       );
     }
